@@ -12,15 +12,16 @@ def read_root():
     return {"Hello": "World"}
 
 # Método para recuperar o dataset do projeto e retornar um JSON
+# O parâmetro "original" define se deve carregar o Dataset original ou o dataset ajustado/tratado.
 @api.get("/get-dataset")
-def get_dataset():
+def get_dataset(original):
     # Chama o procedimento para carregar o dataset
-    dados = data_handler.load_data()
+    dados = data_handler.load_data(original=int(original))
     # Cada registro, vai trazer o nome da coluna e atributo para todos eles
     json = dados.to_json(orient='records')
     return json
 
-# Método para salvar a predição no arquivo local JSON. O método recebe um JSON do paciente
+# Método para salvar a predição no arquivo local JSON. O método recebe um JSON dos dados
 @api.post("/save-prediction")
 def save_prediction(paciente: Any = Body(None)):
     # Transforma o JSON em objeto python
@@ -36,10 +37,10 @@ def get_all_predictions():
     predictions = data_handler.get_all_predictions()
     return predictions
 
-# Método para realizar a predição. O método recebe um JSON do paciente e retorna o valor da predição
+# Método para realizar a predição. O método recebe um JSON com os dados de entrada e retorna o valor da predição
 @api.post("/predict")
-def predict(paciente: Any = Body(None)):
-    # Chama procedimento para realizar a predição, passando o JSON do paciente
-    result = data_handler.diagnosis_predict(json.loads(paciente))
+def predict(info: Any = Body(None)):
+    # Chama procedimento para realizar a predição, passando o JSON
+    result = data_handler.predict(json.loads(info))
     return result
 

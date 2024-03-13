@@ -3,43 +3,37 @@ import json
 import pickle
 
 # Definição global map das variáveis para valores numéricos
-SEX_MAP = {
-    'Female': 0,
-    'Male': 1,
+HOLIDAY_MAP = {
+    'False': 0, # No holiday
+    'True': 1, # Holiday
 }
-CHEST_PAIN_MAP = {
-    'Typical Angina': 1, 
-    'Atypical Angina': 2, 
-    'Non-anginal Pain': 3, 
-    'Asymptomatic': 4,
+FUNCTIONING_DAY_MAP = {
+    'False': 0, # No
+    'True': 1, # Yes
 }
-FBS_MAP = {
-    'False': 0, 
-    'True': 1,
+DAY_MAP = {
+    'Sunday': 1,
+    'Monday': 2,
+    'Tuesday': 3,
+    'Wednesday': 4,
+    'Thursday': 5,
+    'Friday': 6,
+    'Saturday': 7,
 }
-RESTECG_MAP = {
-    'Normal': 0, 
-    'ST-T abnormalities': 1,
-    'Probable or definite left ventricular hypertrophy': 2,
-}
-EXANG_MAP = {
-    'No': 0, 
-    'Yes': 1,
-}
-SLOPE_MAP = {
-    'Upsloping': 1, 
-    'Flat': 1,
-    'Downsloping': 3,
-}
-THAL_MAP = {
-    'Normal': 3, 
-    'Fixed defect': 6,
-    'Reversible defect': 7,
+SEASON_MAP = {
+    'Spring': 1,
+    'Summer': 2,
+    'Autumn': 3,
+    'Winter': 4,
 }
 
 # Procedimento para carregar o nosso dataset
-def load_data():
-    dados = pd.read_csv('./data/heart-disease-uci.csv')
+def load_data(original=1):    
+    dados = None
+    if original == 1:
+        dados = pd.read_csv('./data/SeoulBikeData.csv', encoding='cp1252')
+    else:
+        dados = pd.read_csv('./data/dataset_ajustado.csv', encoding='cp1252')
     return dados
 
 # Procedimento para retornar todas as predições existentes no arquivo JSON local 
@@ -53,13 +47,13 @@ def get_all_predictions():
 # Salvar a predição efetuada em nosso arquivo local de resultados de predição
 def save_prediction(paciente):
     # Mapear os valores para numérico
-    paciente['sex'] = SEX_MAP[paciente['sex']]
-    paciente['cp'] = CHEST_PAIN_MAP[paciente['cp']]
-    paciente['fbs'] = FBS_MAP[paciente['fbs']]
-    paciente['restecg'] = RESTECG_MAP[paciente['restecg']]
-    paciente['exang'] = EXANG_MAP[paciente['exang']]
-    paciente['slope'] = SLOPE_MAP[paciente['slope']]
-    paciente['thal'] = THAL_MAP[paciente['thal']]
+    # paciente['sex'] = SEX_MAP[paciente['sex']]
+    # paciente['cp'] = CHEST_PAIN_MAP[paciente['cp']]
+    # paciente['fbs'] = FBS_MAP[paciente['fbs']]
+    # paciente['restecg'] = RESTECG_MAP[paciente['restecg']]
+    # paciente['exang'] = EXANG_MAP[paciente['exang']]
+    # paciente['slope'] = SLOPE_MAP[paciente['slope']]
+    # paciente['thal'] = THAL_MAP[paciente['thal']]
 
     # Recuperar todas as predições existentes
     data = get_all_predictions()
@@ -72,22 +66,39 @@ def save_prediction(paciente):
         json.dump(data, f)
 
 # Retornar o diagnóstico da predição
-def diagnosis_predict(paciente):
+def predict(info):
     # Mapear os valores para numérico
-    paciente['sex'] = SEX_MAP[paciente['sex']]
-    paciente['cp'] = CHEST_PAIN_MAP[paciente['cp']]
-    paciente['fbs'] = FBS_MAP[paciente['fbs']]
-    paciente['restecg'] = RESTECG_MAP[paciente['restecg']]
-    paciente['exang'] = EXANG_MAP[paciente['exang']]
-    paciente['slope'] = SLOPE_MAP[paciente['slope']]
-    paciente['thal'] = THAL_MAP[paciente['thal']]
+    info['season'] = SEASON_MAP[info['season']]
+    info['holiday'] = HOLIDAY_MAP[info['holiday']]
+    info['functioning_day'] = FUNCTIONING_DAY_MAP[info['functioning_day']]
+
+    # Objeto apenas com os dados de entrada do modelo
+    predict_obj = {
+        'Hour': info['hour'],
+        'Temperature(°C)': info['temperature'],
+        'Humidity(%)': info['humidity'],
+        'Wind speed (m/s)': info['wind_speed'],
+        'Visibility (10m)': info['visibility'],
+        'Dew point temperature(°C)': info['dew_point'],
+        'Solar Radiation (MJ/m2)': info['solar_radiation'],
+        'Rainfall(mm)': info['rainfall'],
+        'Snowfall (cm)': info['snowfall'],
+        'Seasons': info['season'],
+        'Holiday': info['holiday'],
+        'Functioning Day': info['functioning_day'],
+        'Day': info['day'],
+        'Month': info['month'],
+        'weekend': info['weekend'],
+    }
 
     # Transforma o objeto em dataframe
-    values = pd.DataFrame([paciente])
+    values = pd.DataFrame([predict_obj])
     
     # Recuperar o modelo
-    model = pickle.load(open('./models/heart_disease_model.pkl', 'rb'))
-
+    # model = pickle.load(open('./models/bike_gridsearch.pkl', 'rb'))
+    model = None
+    model = pd.read_pickle('./models/bike_gridsearch.pkl')  
+    
     # Efetuar a predição
     results = model.predict(values)
     result = None
