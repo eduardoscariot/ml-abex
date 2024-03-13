@@ -176,19 +176,6 @@ if submit or 'target' in st.session_state:
 
     if result is not None:
         st.subheader(f"Valor retornado pela predição: {result}")
-        # disease = result
-
-        # # Resultado: 1 = no disease | 2 = disease
-        # if disease == 1:
-        #     # Caso o paciente não apresentar ter problemas cardíacos, apresenta uma mensagem positiva!
-        #     st.subheader("Paciente não tem problemas cardíacos! 👏🎉🎆")
-        #     if 'target' not in st.session_state:
-        #         st.balloons()
-        # else:
-        #     # Caso o paciente apresente ter problemas cardíacos, apresenta uma mensagem triste!
-        #     st.subheader("Infelizmente foi detectado problema cardíaco, seria adequado buscar orientação médica. 😢😟🥺")
-        #     if 'target' not in st.session_state:
-        #         st.snow()
 
         # Armazenar o resultado da predição na sessão
         st.session_state['target'] = result
@@ -205,87 +192,87 @@ if submit or 'target' in st.session_state:
             # Botão para feedback de predição incorreta
             wrong_prediction = st.button("👎")
 
-#         # Caso o usuário der um feedback da precisão, vamos agradecer e armazenar a predição no arquivo local JSON
-#         if correct_prediction or wrong_prediction:
-#             message = "Muito obrigado pelo seu feedback. "
+        # Caso o usuário der um feedback da precisão, vamos agradecer e armazenar a predição no arquivo local JSON
+        if correct_prediction or wrong_prediction:
+            message = "Muito obrigado pelo seu feedback. "
 
-#             if wrong_prediction:
-#                 message += "Iremos utilizar esses dados para melhorar nosso modelo."
+            if wrong_prediction:
+                message += "Iremos utilizar esses dados para melhorar nosso modelo."
 
-#             # Armazenar a informação se a predição foi correta ou não, para futuro uso de apresentação de dados.
-#             if correct_prediction:
-#                 paciente['CorrectPrediction'] = True
-#             elif wrong_prediction:
-#                 paciente['CorrectPrediction'] = False
+            # Armazenar a informação se a predição foi correta ou não, para futuro uso de apresentação de dados.
+            if correct_prediction:
+                info['CorrectPrediction'] = True
+            elif wrong_prediction:
+                info['CorrectPrediction'] = False
 
-#             # Armazenar a predição no objeto do paciente
-#             paciente['target'] = st.session_state['target']
+            # Armazenar a predição no objeto
+            info['target'] = st.session_state['target']
             
-#             # Apresentar a mensagem para o usuário
-#             st.write(message)
+            # Apresentar a mensagem para o usuário
+            st.write(message)
 
-#             # Salvar predição no arquivo JSON via requisição POST para nossa API
-#             response = requests.post(f"{API_URL}/save-prediction", json=json.dumps(paciente))
+            # Salvar predição no arquivo JSON via requisição POST para nossa API
+            response = requests.post(f"{API_URL}/save-prediction", json=json.dumps(info))
 
-#             # Se o código da resposta da API for diferente de 200, apresenta mensagem de erro e da exceção 
-#             if response.status_code != 200:
-#                 msg = f"Falha ao salvar a predição: {response.status_code}"
-#                 print(msg)
-#                 raise Exception(msg)
+            # Se o código da resposta da API for diferente de 200, apresenta mensagem de erro e da exceção 
+            if response.status_code != 200:
+                msg = f"Falha ao salvar a predição: {response.status_code}"
+                print(msg)
+                raise Exception(msg)
 
-#     # Caso foi feita uma predição, apresentamos um botão para iniciar uma nova análise
-#     col1, col2, col3 = st.columns(3)
+    # Caso foi feita uma predição, apresentamos um botão para iniciar uma nova análise
+    col1, col2, col3 = st.columns(3)
 
-#     with col2:
-#         new_test = st.button("Iniciar nova análise")
+    with col2:
+        new_test = st.button("Iniciar nova análise")
 
-#         # Se pressionou o botão de nova análise e tem dados em cache de predição, vai limpar
-#         if new_test and 'target' in st.session_state:
-#             # Limpar dados da sessão
-#             del st.session_state['target']
-#             st.rerun()
+        # Se pressionou o botão de nova análise e tem dados em cache de predição, vai limpar
+        if new_test and 'target' in st.session_state:
+            # Limpar dados da sessão
+            del st.session_state['target']
+            st.rerun()
 
-# # Botão apresentar os dados de acurácia
-# accuracy_prediction_on = st.toggle("Exibir acurácia")
+# Botão apresentar os dados de acurácia
+accuracy_prediction_on = st.toggle("Exibir acurácia")
 
-# if accuracy_prediction_on:
-#     # Recuperar as predições salvas em nosso arquivo JSON via requisição GET para a API
-#     response = requests.get(f"{API_URL}/get-all-predictions")
+if accuracy_prediction_on:
+    # Recuperar as predições salvas em nosso arquivo JSON via requisição GET para a API
+    response = requests.get(f"{API_URL}/get-all-predictions")
     
-#     # Se o código da resposta da API for diferente de 200, apresenta mensagem de erro e da exceção 
-#     if response.status_code != 200:
-#         msg = f"Falha ao recuperar as predições: {response.status_code}"
-#         print(msg)
-#         raise Exception(msg)
+    # Se o código da resposta da API for diferente de 200, apresenta mensagem de erro e da exceção 
+    if response.status_code != 200:
+        msg = f"Falha ao recuperar as predições: {response.status_code}"
+        print(msg)
+        raise Exception(msg)
 
-#     predictions = response.json()
+    predictions = response.json()
 
-#     # Inicializar as variáveis para calcular a acurácia
-#     num_total_predictions = len(predictions)
-#     correct_predictions = 0
-#     total = 0
-#     accuracy_hist = []
+    # Inicializar as variáveis para calcular a acurácia
+    num_total_predictions = len(predictions)
+    correct_predictions = 0
+    total = 0
+    accuracy_hist = []
 
-#     # Para cada predição vamos fazer o cálculo para gerar um histórico de acurácia e salvando o número de predições corretas
-#     for index, paciente in enumerate(predictions):
+    # Para cada predição vamos fazer o cálculo para gerar um histórico de acurácia e salvando o número de predições corretas
+    for index, info in enumerate(predictions):
         
-#         total = total + 1
-#         if paciente['CorrectPrediction'] == True:
-#             correct_predictions += 1
+        total = total + 1
+        if info['CorrectPrediction'] == True:
+            correct_predictions += 1
 
-#         temp_accuracy = correct_predictions / total if total else 0
+        temp_accuracy = correct_predictions / total if total else 0
 
-#         # Adiciona a acurácia calculada para o array de histórico
-#         accuracy_hist.append(round(temp_accuracy, 2))
+        # Adiciona a acurácia calculada para o array de histórico
+        accuracy_hist.append(round(temp_accuracy, 2))
 
-#     # Calcular a acurácia geral das predições
-#     accuracy = correct_predictions / num_total_predictions if num_total_predictions else 0
+    # Calcular a acurácia geral das predições
+    accuracy = correct_predictions / num_total_predictions if num_total_predictions else 0
 
-#     # Apresentar mética no layout
-#     st.metric("Acurácia", round(accuracy, 2))
+    # Apresentar mética no layout
+    st.metric("Acurácia", round(accuracy, 2))
 
-#     # Apresentar o gráfico de histórico de acurácia
-#     st.subheader("Histórico de acurácia")
-#     st.line_chart(accuracy_hist)
+    # Apresentar o gráfico de histórico de acurácia
+    st.subheader("Histórico de acurácia")
+    st.line_chart(accuracy_hist)
 
 

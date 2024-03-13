@@ -23,11 +23,11 @@ def get_dataset(original):
 
 # Método para salvar a predição no arquivo local JSON. O método recebe um JSON dos dados
 @api.post("/save-prediction")
-def save_prediction(paciente: Any = Body(None)):
+def save_prediction(info: Any = Body(None)):
     # Transforma o JSON em objeto python
-    paciente_obj = json.loads(paciente)
+    info_obj = json.loads(info)
     # Chama procedimento para salvar a predição
-    result = data_handler.save_prediction(paciente_obj)
+    result = data_handler.save_prediction(info_obj)
     return result
 
 # Método para recuperar todas as predições salvar no arquivo JSON local

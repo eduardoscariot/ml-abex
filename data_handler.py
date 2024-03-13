@@ -45,21 +45,36 @@ def get_all_predictions():
     return data
 
 # Salvar a predição efetuada em nosso arquivo local de resultados de predição
-def save_prediction(paciente):
+def save_prediction(info):
     # Mapear os valores para numérico
-    # paciente['sex'] = SEX_MAP[paciente['sex']]
-    # paciente['cp'] = CHEST_PAIN_MAP[paciente['cp']]
-    # paciente['fbs'] = FBS_MAP[paciente['fbs']]
-    # paciente['restecg'] = RESTECG_MAP[paciente['restecg']]
-    # paciente['exang'] = EXANG_MAP[paciente['exang']]
-    # paciente['slope'] = SLOPE_MAP[paciente['slope']]
-    # paciente['thal'] = THAL_MAP[paciente['thal']]
+    info['season'] = SEASON_MAP[info['season']]
+    info['holiday'] = HOLIDAY_MAP[info['holiday']]
+    info['functioning_day'] = FUNCTIONING_DAY_MAP[info['functioning_day']]
 
+    # Objeto apenas com os dados de entrada do modelo
+    predict_obj = {
+        'Hour': info['hour'],
+        'Temperature(°C)': info['temperature'],
+        'Humidity(%)': info['humidity'],
+        'Wind speed (m/s)': info['wind_speed'],
+        'Visibility (10m)': info['visibility'],
+        'Dew point temperature(°C)': info['dew_point'],
+        'Solar Radiation (MJ/m2)': info['solar_radiation'],
+        'Rainfall(mm)': info['rainfall'],
+        'Snowfall (cm)': info['snowfall'],
+        'Seasons': info['season'],
+        'Holiday': info['holiday'],
+        'Functioning Day': info['functioning_day'],
+        'Day': info['day'],
+        'Month': info['month'],
+        'weekend': info['weekend'],
+        'CorrectPrediction': info['CorrectPrediction'],
+    }
     # Recuperar todas as predições existentes
     data = get_all_predictions()
 
     # Adicionar a nova predição
-    data.append(paciente)
+    data.append(predict_obj)
 
     # Escrever no arquivo local
     with open('predictions.json', 'w') as f:
