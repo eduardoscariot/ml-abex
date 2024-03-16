@@ -33,7 +33,7 @@ def load_data(original=1):
     if original == 1:
         dados = pd.read_csv('./data/SeoulBikeData.csv', encoding='cp1252')
     else:
-        dados = pd.read_csv('./data/dataset_ajustado.csv', encoding='cp1252')
+        dados = pd.read_csv('./data/dataset_ajustado.csv', encoding='utf-8')
     return dados
 
 # Procedimento para retornar todas as predições existentes no arquivo JSON local 
@@ -112,7 +112,7 @@ def predict(info):
     # Recuperar o modelo
     # model = pickle.load(open('./models/bike_gridsearch.pkl', 'rb'))
     model = None
-    model = pd.read_pickle('./models/bike_gridsearch.pkl')  
+    # model = pd.read_pickle('./models/bike_gridsearch.pkl')  
     
     # Efetuar a predição
     results = model.predict(values)

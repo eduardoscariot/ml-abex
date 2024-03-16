@@ -6,6 +6,7 @@ import requests
 import util
 import json
 import sys
+import seaborn as sns
 
 # URL da API local
 API_URL = "http://127.0.0.1:8000"
@@ -50,6 +51,198 @@ if data_analyses_on:
     # Apresenta o dataframe
     st.subheader("Dataset Original - Sem tratamento de dados")
     st.dataframe(dados)
+
+    # Apresentar correlação dos dados
+    st.subheader("Correlação de dados")
+    fig, ax = plt.subplots()
+    sns.heatmap(dados_ajustados.corr(), ax=ax)
+    st.write(fig)
+
+    # Calculando o número de valores únicos em cada coluna
+    st.subheader("Qtd. valores únicos em cada coluna")
+    unique_values = dados_ajustados.nunique()
+
+    # Criando um DataFrame para armazenar essas informações
+    unique_dataset = pd.DataFrame({
+        'Features': unique_values.index,
+        'Uniques': unique_values.values
+    })
+
+    # Configurando o tamanho do gráfico
+    plt.figure(figsize=(15, 8))
+
+    # Criando o gráfico de barras usando seaborn
+    splot = sns.barplot(x=unique_dataset['Features'], y=unique_dataset['Uniques'], alpha=0.8, color='red')
+
+    # Adicionando rótulos aos topos das barras
+    for p in splot.patches:
+        splot.annotate(format(p.get_height(), '.0f'), (p.get_x() + p.get_width() / 2., p.get_height()), ha='center',
+                    va='center', xytext=(0, 9), textcoords='offset points')
+
+    # Adicionando título e rótulos dos eixos
+    # plt.title('Qtd. valores únicos em cada coluna', weight='bold', size=15)
+    plt.ylabel('Valores únicos', size=18, weight='bold')
+    plt.xlabel('Features', size=18, weight='bold')
+    plt.xticks(rotation=90)
+
+    # Exibindo o gráfico
+    st.pyplot(plt)
+
+    # Criando a visualização dos dados de aluguel de bicicletas por mês
+    st.subheader("Bicicletas alugadas X Mês")
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.barplot(data=dados_ajustados, x='Month', y='Rented Bike Count', color='lightblue', errorbar=None)
+    ax.set_xlabel('Mês', fontsize=18, weight='bold')
+    ax.set_ylabel('Qtd. bicicletas alugadas', fontsize=18, weight='bold')
+
+    for bar in ax.patches:
+        ax.annotate(format(bar.get_height(), '.2f'), (bar.get_x() + bar.get_width() / 2, bar.get_height()), ha='center',
+                    va='center', size=10, xytext=(0, 8), textcoords='offset points')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+    # Apresentando o gráfico de comparação da quantidade de bicicletas alugadas com o dia da semana
+    st.subheader("Média de bicicletas alugadas X Dia da semana")
+
+    # Criando o gráfico de barras para a média do número de bicicletas alugadas por dia
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.barplot(data=dados_ajustados, x='Day', y='Rented Bike Count', errorbar=None, color='lightgreen', ax=ax)
+    ax.set_xlabel('Dia da semana', fontsize=18, weight='bold')
+    ax.set_ylabel('Média de bicicletas alugadas', fontsize=18, weight='bold')
+
+    # Adicionando rótulos nas barras
+    for bar in ax.patches:
+        ax.annotate(format(bar.get_height(), '.2f'), (bar.get_x() + bar.get_width() / 2, bar.get_height()), ha='center',
+                    va='center', size=10, xytext=(0, 8), textcoords='offset points')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+    # Criando o gráfico de caixa para o número de bicicletas alugadas em relação à hora do dia
+    st.subheader("Bicicletas alugadas X hora")
+    fig, ax = plt.subplots(figsize=(20, 10))
+    sns.boxplot(data=dados_ajustados, x='Hour', y='Rented Bike Count', color='blue', ax=ax)
+    ax.set_xlabel('Hora', fontsize=22, weight='bold')
+    ax.set_ylabel('Bicicletas alugadas', fontsize=22, weight='bold')
+
+    fig,ax=plt.subplots(figsize=(20,6))
+    sns.barplot(data=dados_ajustados,x='Hour',y='Rented Bike Count', ax=ax, errorbar=None, color ='violet')
+    for bar in ax.patches:
+        ax.annotate(format(bar.get_height(), '.2f'),
+                    (bar.get_x() + bar.get_width() / 2,
+                        bar.get_height()), ha='center', va='center',
+                    size=10, xytext=(0, 8),
+                    textcoords='offset points')
+    ax.set_xlabel('Horas',fontsize=22, weight='bold')
+    ax.set_ylabel('Média bicicletas alugadas',fontsize=22, weight='bold')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+    # Criado a verificação da quantidade de bicicletas alugadas em dia de funcionamento e dias que não são
+    st.subheader("Bicicletas alugadas X Dia de funcionamento")
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.barplot(data=dados_ajustados, x='Functioning Day', y='Rented Bike Count', errorbar=None, color='lightpink', ax=ax)
+    ax.set_xlabel('Dia de funcionamento', fontsize=18, weight='bold')
+    ax.set_ylabel('Bicicletas alugadas', fontsize=18, weight='bold')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+    # Criado a verificação da quantidade de bicicletas alugadas em cada estação do ano
+    st.subheader("Bicicletas alugadas X Estação")
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.barplot(data=dados_ajustados, x='Seasons', y='Rented Bike Count', errorbar=None, color='peachpuff', ax=ax)
+    ax.set_xlabel('Estação do ano\n Spring: 1, Summer: 2, Autumn: 3, Winter: 4', fontsize=18, weight='bold')
+    ax.set_ylabel('Bicicletas alugadas', fontsize=18, weight='bold')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+    # Calculando a média do número de bicicletas alugadas em relação à temperatura
+    st.subheader("Bicicletas alugadas X Temperatura °C")
+
+    df_temperature = pd.DataFrame(dados_ajustados.groupby('Temperature(°C)')['Rented Bike Count'].mean().sort_values(ascending=False))
+
+    # Criando o gráfico de dispersão para a média do número de bicicletas alugadas em relação à temperatura
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.scatterplot(data=df_temperature, x='Temperature(°C)', y='Rented Bike Count', color='black', ax=ax)
+    ax.set_xlabel('Temperatura(°C)', fontsize=18, weight='bold')
+    ax.set_ylabel('Qnt. bicicletas alugadas', fontsize=18, weight='bold')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+    # Calculando a média do número de bicicletas alugadas em relação à chuva
+    st.subheader("Bicicletas alugadas X Chuva (mm)")
+
+    df_rain = pd.DataFrame(dados_ajustados.groupby('Rainfall(mm)')['Rented Bike Count'].mean().sort_values(ascending=False))
+
+    # Criando o gráfico de dispersão para a média do número de bicicletas alugadas em relação à chuva
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.scatterplot(data=df_rain, x='Rainfall(mm)', y='Rented Bike Count', color='black', ax=ax)
+    ax.set_xlabel('Chuva(mm)', fontsize=18, weight='bold')
+    ax.set_ylabel('Qnt. bicicletas alugadas', fontsize=18, weight='bold')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+    # Calculando a média do número de bicicletas alugadas em relação à neve
+    st.subheader("Bicicletas alugadas X Neve (cm)")
+
+    df_rain = pd.DataFrame(dados_ajustados.groupby('Snowfall (cm)')['Rented Bike Count'].mean().sort_values(ascending=False))
+
+    # Criando o gráfico de dispersão para a média do número de bicicletas alugadas em relação à neve
+    fig, ax = plt.subplots(figsize=(15, 8))
+    sns.scatterplot(data=df_rain, x='Snowfall (cm)', y='Rented Bike Count', color='black', ax=ax)
+    ax.set_xlabel('Neve(cm)', fontsize=18, weight='bold')
+    ax.set_ylabel('Qnt. bicicletas alugadas', fontsize=18, weight='bold')
+
+    # Exibindo o gráfico
+    st.pyplot(fig)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     st.subheader("Dataset com o tratamento dos dados")
     st.dataframe(dados_ajustados)
