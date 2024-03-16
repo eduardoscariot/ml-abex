@@ -112,7 +112,7 @@ def predict(info):
     # Recuperar o modelo
     # model = pickle.load(open('./models/bike_gridsearch.pkl', 'rb'))
     model = None
-    # model = pd.read_pickle('./models/bike_gridsearch.pkl')  
+    model = pd.read_pickle('./models/bike_gridsearch.pkl')  
     
     # Efetuar a predição
     results = model.predict(values)

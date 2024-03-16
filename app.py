@@ -208,55 +208,36 @@ if data_analyses_on:
     # Exibindo o gráfico
     st.pyplot(fig)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # Apresentar como ficou o dataset
     st.subheader("Dataset com o tratamento dos dados")
     st.dataframe(dados_ajustados)
-    # Apresentar um histograma de idades
-    # st.header("Histograma - Idade")
-    # fig = plt.figure()
-    # plt.hist(dados['age'], bins=30)
-    # plt.xlabel("Idade")
-    # plt.ylabel("Quantidade")
-    # st.pyplot(fig)
+    
+    # Apresentar as comparações de modelos treinados
+    st.title("Comparação de modelos")
+    st.write("Aqui vamos apresentar o comparativo que fizemos dos modelos que foram treinados no Colab com o dataset preparado.")
+    # Regressão linear
+    st.subheader("Regressão linear")
+    st.image("./media/regressao_linear.png", caption="Resultados do modelo de regressão linear")
+    # Random forest
+    st.subheader("Random forest")
+    st.image("./media/random_forest.png", caption="Resultados do modelo random forest")
+    # Random forest utilizando GridSearchCV
+    st.subheader("Random forest utilizando GridSearchCV")
+    st.image("./media/random_forest_gridsearchcv.png", caption="Resultados do modelo random forest utilizando GridSearchCV")
+    # XGBoost utilizando GridSearchCV
+    st.subheader("XGBoost utilizando GridSearchCV")
+    st.image("./media/xgboost_gridsearchcv.png", caption="Resultados do modelo XGBoost utilizando GridSearchCV")
+    # LightGBM utilizando GridSearchCV
+    st.subheader("LightGBM utilizando GridSearchCV")
+    st.image("./media/lightgbm_gridsearchcv.png", caption="Resultados do modelo LightGBM utilizando GridSearchCV")
+    # Gráfico comparativo
+    st.subheader("Gráfico comparativo")
+    st.image("./media/r2_score.png", caption="Resultados de TESTE de cada modelo treinado em forma de gráfico")
+    # Gráfico comparativo
+    st.subheader("Tabela comparativa")
+    st.image("./media/r2_score_table.png", caption="Tabela apresentando o resultado de TREINO e TESTE de cada modelo treinado")
+    
 
-    # # Gerar gráfico com a quantidade de registros de diagnósticos sem doença(1) e com doença(2).
-    # st.header("Diagnóstico de doença cardíaca (diagnóstico angiográfico)")
-    # st.bar_chart(dados.target.value_counts())
 
 # Vai montar as linhas de campos de entrada de dados
 st.header('Preditor de compartilhamento de bicicleta')
